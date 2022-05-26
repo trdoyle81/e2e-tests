@@ -23,7 +23,7 @@ import (
 
 const (
 	containerImageSource   = "quay.io/redhat-appstudio/e2e-tests:latest"
-	gitSourceURL           = "https://github.com/devfile-samples/devfile-sample-python-basic"
+	defaultGitSourceURL    = "https://github.com/devfile-samples/devfile-sample-python-basic"
 	dummyPipelineBundleRef = "quay.io/redhat-appstudio-qe/dummy-pipeline-bundle:latest"
 )
 
@@ -77,14 +77,14 @@ var _ = framework.BuildSuiteDescribe("Build Service E2E tests", func() {
 			}, timeout, interval).Should(BeTrue(), "expected the PipelineRun not to be triggered")
 		})
 	})
-	When("component with git source is created", func() {
+	When("component with git source is created", func() { //add multiple
 		BeforeAll(func() {
 			componentName = fmt.Sprintf("build-suite-test-component-git-source-%s", util.GenerateRandomString(10))
 			outputContainerImage = fmt.Sprintf("quay.io/%s/test-images:%s", utils.GetQuayIOOrganization(), strings.Replace(uuid.New().String(), "-", "", -1))
 			timeout = time.Second * 60
 			interval = time.Second * 1
 			// Create a component with Git Source URL being defined
-			component, err = f.HasController.CreateComponent(applicationName, componentName, appStudioE2EApplicationsNamespace, gitSourceURL, "", outputContainerImage, "")
+			component, err = f.HasController.CreateComponent(applicationName, componentName, appStudioE2EApplicationsNamespace, defaultGitSourceURL, "", outputContainerImage, "")
 			Expect(err).ShouldNot(HaveOccurred())
 			DeferCleanup(f.HasController.DeleteHasComponent, componentName, appStudioE2EApplicationsNamespace)
 
@@ -111,7 +111,7 @@ var _ = framework.BuildSuiteDescribe("Build Service E2E tests", func() {
 			}
 
 		})
-		It("triggers a PipelineRun", func() {
+		It("triggers a PipelineRun", func() { //check for m
 			Eventually(func() bool {
 				pipelineRun, err := f.HasController.GetComponentPipeline(componentName, applicationName, appStudioE2EApplicationsNamespace)
 				if err != nil {
